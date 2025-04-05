@@ -33,6 +33,7 @@
 use anda_core::{BoxError, BoxPinFut, ObjectMeta, Path, PutMode, PutResult, path_lowercase};
 use futures::TryStreamExt;
 use object_store::PutOptions;
+use std::io::Read;
 use std::sync::Arc;
 
 pub use object_store::{ObjectStore, local::LocalFileSystem, memory::InMemory};
@@ -185,7 +186,11 @@ impl Store {
                 }
                 buf.freeze() // Convert to immutable Bytes
             }
-            _ => return Err("StoreFeatures: unexpected payload from get_opts".into()),
+            object_store::GetResultPayload::File(mut file, _) => {
+                let mut buf = Vec::new();
+                file.read_to_end(&mut buf)?;
+                bytes::Bytes::from(buf)
+            }
         };
         Ok((data, res.meta))
     }

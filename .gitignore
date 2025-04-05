@@ -21,3 +21,5 @@ object_store/
 #  option (not recommended) you can uncomment the following to ignore the entire idea folder.
 #.idea/
 .env
+
+agents/anda_bot/forio/
